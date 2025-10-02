@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Portfólio de Resultados - Endodontia</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        h1 {
+            color: #1e3a8a;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 1.3em;
+            font-weight: 500;
+        }
+
+        .period {
+            display: inline-block;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 2em;
+            color: #1e3a8a;
+            margin-bottom: 25px;
+            padding-left: 20px;
+            border-left: 6px solid #3b82f6;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .kpi-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            padding: 30px;
+            border-radius: 18px;
+            color: white;
+            box-shadow: 0 12px 35px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card.updated {
+            box-shadow: 0 0 0 4px #fbbf24;
+            transition: box-shadow 0.3s;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transition: all 0.5s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 18px 45px rgba(59, 130, 246, 0.5);
+        }
+
+        .kpi-card:hover::before {
+            top: -60%;
+            right: -60%;
+        }
+
+        .kpi-card.green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.4);
+        }
+
+        .kpi-card.purple {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            box-shadow: 0 12px 35px rgba(139, 92, 246, 0.4);
+        }
+
+        .kpi-card.orange {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 12px 35px rgba(245, 158, 11, 0.4);
+        }
+
+        .kpi-label {
+            font-size: 0.95em;
+            opacity: 0.95;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .kpi-value {
+            font-size: 2.8em;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .kpi-change {
+            font-size: 0.9em;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 30px;
+            margin-bottom: 35px;
+        }
+
+        .chart-box {
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s;
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .chart-box:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 12px 35px rgba(59, 130, 246, 0.2);
+        }
+
+        .chart-box canvas {
+            width: 100% !important;
+            height: 320px !important;
+            max-height: 320px;
+        }
+
+        .chart-title {
+            font-size: 1.2em;
+            color: #1e3a8a;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .impact-box {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 3px solid #10b981;
+            padding: 35px;
+            border-radius: 18px;
+            margin-bottom: 35px;
+        }
+
+        .impact-title {
+            font-size: 1.8em;
+            color: #065f46;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .impact-item {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 5px solid #10b981;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .impact-item h4 {
+            color: #065f46;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .impact-item p {
+            font-size: 2em;
+            color: #10b981;
+            font-weight: 800;
+        }
+
+        .impact-item span {
+            font-size: 0.75em;
+            color: #64748b;
+            display: block;
+            margin-top: 8px;
+        }
+
+        .timeline {
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            border: 2px solid #e5e7eb;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .timeline-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 19px;
+            top: 50px;
+            width: 2px;
+            height: calc(100% - 20px);
+            background: #3b82f6;
+        }
+
+        .timeline-dot {
+            min-width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            z-index: 1;
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .timeline-date {
+            color: #3b82f6;
+            font-weight: 700;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .timeline-title {
+            color: #1e3a8a;
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .timeline-desc {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .testimonial-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 30px;
+            border-radius: 18px;
+            border: 3px solid #f59e0b;
+            margin-bottom: 35px;
+        }
+
+        .testimonial-title {
+            font-size: 1.5em;
+            color: #92400e;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 4em;
+            color: #f59e0b;
+            opacity: 0.2;
+            font-family: Georgia, serif;
+        }
+
+        .testimonial-text {
+            color: #374151;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            color: #92400e;
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .testimonial-rating {
+            color: #f59e0b;
+            text-align: right;
+            margin-top: 5px;
+            font-size: 1.2em;
+        }
+
+        footer {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            padding: 40px;
+            border-radius: 18px;
+            color: white;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        footer h3 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #fbbf24;
+        }
+
+        footer p {
+            line-height: 2;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+
+        .highlight {
+            color: #fbbf24;
+            font-weight: 800;
+            font-size: 1.1em;
+        }
+
+        .cta-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 25px;
+            border: 2px solid rgba(251, 191, 36, 0.5);
+        }
+
+        .cta-box h4 {
+            color: #fbbf24;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        #parametrosForm button {
+            transition: background 0.2s, transform 0.1s;
+            cursor: pointer;
+        }
+        #parametrosForm button:hover {
+            background: #2563eb;
+            transform: scale(1.05);
+        }
+        #parametrosForm button:active {
+            background: #10b981;
+            transform: scale(0.97);
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+
+            .section-title {
+                font-size: 1.5em;
+            }
+
+            .chart-box canvas {
+                height: 220px !important;
+                max-height: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💎 Meu Portfólio de Resultados</h1>
+            <p class="subtitle">Demonstração de Valor Agregado à Clínica</p>
+            <div class="period">📅 Período Analisado: Jan - Set 2025</div>
+        </header>
+
+        <section class="section">
+            <h2 class="section-title">🎯 1. Minha Performance Clínica</h2>
+            
+            <div class="kpi-container">
+                <div class="kpi-card green">
+                    <div class="kpi-label">Minha Taxa de Sucesso</div>
+                    <div class="kpi-value">96.2%</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Meus Retratamentos / Exodontia</div>
+                    <div class="kpi-value">3.8%</div>
+                </div>
+                <div class="kpi-card purple">
+                    <div class="kpi-label">Procedimentos que Realizei</div>
+                    <div class="kpi-value">479</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-box">
+                    <div class="chart-title">📈 Minha Evolução de Sucesso</div>
+                    <canvas id="minhaEvolucaoChart"></canvas>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-title">📊 Meus Procedimentos Realizados</div>
+                    <canvas id="meusProcedimentosChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">💰 2. Valor Financeiro que Gero</h2>
+            
+            <div class="kpi-container">
+                <div class="kpi-card green receita-total">
+                    <div class="kpi-label">Receita que Trouxe (9 meses)</div>
+                    <div class="kpi-value">R$ 360,5k</div>
+                </div>
+                <div class="kpi-card purple">
+                    <div class="kpi-label">Meu Ticket Médio</div>
+                    <div class="kpi-value">R$ 753</div>
+                </div>
+                <div class="kpi-card orange">
+                    <div class="kpi-label">Economia em Retratamentos</div>
+                    <div class="kpi-value">R$ 22.6k</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-box">
+                    <div class="chart-title">💵 Receita Mensal que Gerei</div>
+                    <canvas id="minhaReceitaChart"></canvas>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-title">📉 Economia vs Custo de Retratamentos</div>
+                    <canvas id="economiaChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">🔎 Observação dos Dados</h2>
+            <div style="background:#f8fafc; border-left:5px solid #3b82f6; padding:24px; border-radius:12px; margin-bottom:32px;">
+                <p>
+                    Os resultados apresentados consideram <strong>2 falhas por mês</strong> (total de 18 retratamentos/exodontias no período analisado).
+                    Os valores de receita foram calculados com base em <strong>R$ 1.100</strong> para procedimentos molares e <strong>R$ 450</strong> para pré-molares.
+                </p>
+                <p>
+                    Para maior transparência, você pode ajustar esses parâmetros abaixo e visualizar o impacto direto nos indicadores do dashboard.
+                </p>
+                <form id="parametrosForm" style="margin-top:18px; display:flex; gap:24px; flex-wrap:wrap;">
+                    <label>
+                        Falhas por mês:
+                        <input type="number" id="falhasPorMes" value="2" min="0" style="width:60px;">
+                    </label>
+                    <label>
+                        Valor Molar (R$):
+                        <input type="number" id="valorMolar" value="1100" min="0" style="width:80px;">
+                    </label>
+                    <label>
+                        Valor Pré-molar (R$):
+                        <input type="number" id="valorPremolar" value="450" min="0" style="width:80px;">
+                    </label>
+                    <button type="button" onclick="atualizarDashboard()" style="padding:6px 18px; background:#3b82f6; color:white; border:none; border-radius:6px; font-weight:600;">Atualizar</button>
+                </form>
+            </div>
+        </section>
+
+        <footer>
+            <h3>💼 Proposta de Valor</h3>
+            <p>
+                Este dashboard resume minha contribuição para a clínica nos últimos 9 meses, destacando pontos como <span class="highlight">alta taxa de sucesso</span>, <span class="highlight">baixo índice de retratamentos</span> e <span class="highlight">excelente geração de receita</span>.
+            </p>
+            <p>
+                Os resultados refletem um trabalho focado em qualidade, eficiência e satisfação dos pacientes, além de uma gestão que contribui diretamente para a <span class="highlight">rentabilidade</span> e <span class="highlight">crescimento sustentável</span> da clínica.
+            </p>
+            <p>
+                Fico à disposição para conversar sobre formas de reconhecimento e desenvolvimento profissional, alinhando minha evolução ao sucesso do negócio.
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+        Chart.defaults.color = '#4a5568';
+
+        // 1. Minha Evolução de Sucesso
+        const evolucaoCtx = document.getElementById('minhaEvolucaoChart').getContext('2d');
+        new Chart(evolucaoCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set'],
+                datasets: [{
+                    label: 'Minha Taxa de Sucesso (%)',
+                    data: [98.39, 98.15, 96.97, 98.21, 98.21, 98.15, 98.44, 97.62, 98.28],
+                    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                    borderColor: '#10b981',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#10b981',
+                    pointRadius: 6,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        enabled: true,
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.parsed.y}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 96,
+                        max: 99,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+
+        // 2. Meus Procedimentos Realizados
+        const procedimentosCtx = document.getElementById('meusProcedimentosChart').getContext('2d');
+        new Chart(procedimentosCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set'],
+                datasets: [
+                    {
+                        label: 'Molar',
+                        data: [22, 21, 19, 34, 27, 24, 31, 21, 24],
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderRadius: 12,
+                        borderWidth: 2,
+                        borderColor: '#2563eb'
+                    },
+                    {
+                        label: 'Pré-molar',
+                        data: [40, 33, 14, 22, 29, 30, 33, 21, 34],
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                        borderRadius: 12,
+                        borderWidth: 2,
+                        borderColor: '#10b981'
+                    },
+                    {
+                        label: 'Total',
+                        type: 'line',
+                        data: [62, 54, 33, 56, 56, 54, 64, 42, 58],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#f59e0b',
+                        pointRadius: 6,
+                        fill: false,
+                        order: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: {
+                        enabled: true,
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.parsed.y}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 10 }
+                    }
+                }
+            }
+        });
+
+        // 3. Receita Mensal que Gerei
+        const receitaCtx = document.getElementById('minhaReceitaChart').getContext('2d');
+        const minhaReceitaChart = new Chart(receitaCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set'],
+                datasets: [{
+                    label: 'Receita (R$)',
+                    data: [42200, 37950, 27200, 47300, 42750, 39900, 48950, 32550, 41700],
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    borderColor: '#3b82f6',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#3b82f6',
+                    pointRadius: 6,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        enabled: true,
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: R$ ${context.parsed.y}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 5000 }
+                    }
+                }
+            }
+        });
+
+        // 4. Economia vs Custo de Retratamentos
+        const economiaCtx = document.getElementById('economiaChart').getContext('2d');
+        const economiaChart = new Chart(economiaCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Perda Potencial (10% falha)', 'Custo Real (sua taxa)', 'Economia Gerada'],
+                datasets: [{
+                    label: 'Impacto Financeiro (R$)',
+                    data: [0, 0, 0],
+                    backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
+                    borderRadius: 12,
+                    borderWidth: 2,
+                    borderColor: ['#b91c1c', '#d97706', '#059669']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        enabled: true,
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: R$ ${context.parsed.y}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 5000 }
+                    }
+                }
+            }
+        });
+
+        // Parâmetros iniciais
+        const falhasPorMes = 2;
+        const valorMolar = 1100;
+        const valorPremolar = 450;
+        const molar = [22, 21, 19, 34, 27, 24, 31, 21, 24];
+        const premolar = [40, 33, 14, 22, 29, 30, 33, 21, 34];
+        const totalProcedimentos = molar.reduce((a,b)=>a+b,0) + premolar.reduce((a,b)=>a+b,0);
+        const retratamentos = falhasPorMes * 9;
+        const receitaMensal = molar.map((m, i) => m * valorMolar + premolar[i] * valorPremolar);
+        const receitaTotal = receitaMensal.reduce((a,b)=>a+b,0);
+        const retratamentosPotenciais = Math.round(totalProcedimentos * 0.10);
+        const valorMedio = receitaTotal / totalProcedimentos;
+        const perdaPotencial = Math.round(retratamentosPotenciais * valorMedio);
+        const custoReal = Math.round(retratamentos * valorMedio);
+        const economia = perdaPotencial - custoReal;
+
+        // Inicializa os dados do gráfico
+        economiaChart.data.datasets[0].data = [perdaPotencial, custoReal, economia];
+        economiaChart.update();
+
+        function atualizarDashboard() {
+            const botao = document.querySelector('#parametrosForm button');
+            botao.disabled = true;
+            botao.textContent = 'Atualizando...';
+            botao.style.opacity = '0.7';
+
+            setTimeout(() => {
+                botao.disabled = false;
+                botao.textContent = 'Atualizar';
+                botao.style.opacity = '1';
+            }, 600);
+
+            const falhasPorMes = parseInt(document.getElementById('falhasPorMes').value);
+            const valorMolar = parseInt(document.getElementById('valorMolar').value);
+            const valorPremolar = parseInt(document.getElementById('valorPremolar').value);
+
+            // Dados fixos
+            const molar = [22, 21, 19, 34, 27, 24, 31, 21, 24];
+            const premolar = [40, 33, 14, 22, 29, 30, 33, 21, 34];
+            const totalProcedimentos = molar.reduce((a,b)=>a+b,0) + premolar.reduce((a,b)=>a+b,0);
+            const retratamentos = falhasPorMes * 9;
+            const taxaSucesso = ((totalProcedimentos - retratamentos) / totalProcedimentos * 100).toFixed(1);
+            const taxaRetratamento = (retratamentos / totalProcedimentos * 100).toFixed(1);
+
+            // Receita mensal recalculada
+            const receitaMensal = molar.map((m, i) => m * valorMolar + premolar[i] * valorPremolar);
+            const receitaTotal = receitaMensal.reduce((a,b)=>a+b,0);
+            const ticketMedio = Math.round(receitaTotal / totalProcedimentos);
+
+            const retratamentosPotenciais = Math.round(totalProcedimentos * 0.10);
+            const valorMedio = receitaTotal / totalProcedimentos;
+            const perdaPotencial = Math.round(retratamentosPotenciais * valorMedio);
+            const custoReal = Math.round(retratamentos * valorMedio);
+            const economia = perdaPotencial - custoReal;
+
+            // Atualiza KPIs
+            document.querySelector('.kpi-card.green .kpi-value').textContent = `${taxaSucesso}%`;
+            document.querySelector('.kpi-card:not(.green):not(.purple) .kpi-value').textContent = `${taxaRetratamento}%`;
+            document.querySelector('.kpi-card.purple .kpi-value').textContent = totalProcedimentos;
+            document.querySelector('.kpi-card.receita-total .kpi-value').textContent = `R$ ${Math.round(receitaTotal/1000)}k`;
+            document.querySelector('.kpi-card.purple:nth-child(2) .kpi-value').textContent = `R$ ${ticketMedio}`;
+            document.querySelector('.kpi-card.orange .kpi-value').textContent = `R$ ${Math.round(economia/1000)}k`;
+
+            // Efeito visual nos cards
+            const cards = document.querySelectorAll('.kpi-card');
+            cards.forEach(card => {
+                card.classList.add('updated');
+                setTimeout(() => card.classList.remove('updated'), 600);
+            });
+
+            // Atualiza gráfico Economia vs Custo de Retratamentos
+            economiaChart.data.datasets[0].data = [perdaPotencial, custoReal, economia];
+            economiaChart.update();
+
+            // Atualiza gráfico Receita Mensal
+            minhaReceitaChart.data.datasets[0].data = receitaMensal;
+            minhaReceitaChart.update();
+        }
+    </script>
+</body>
+</html>
